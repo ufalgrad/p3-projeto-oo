@@ -8,8 +8,9 @@
  5.  Listagem de hotéis com filtros
  6.  Edição/Remoção de hotéis
  7.  Adição de agendamentos para um usuário cadastrado
- 8.  Listagem de agendamentos para cada usuário
- 9.  Listagem de agendamentos para cada hotel
- 10. Notificação de proximidade de um agendamento (Uma semana de antecedência)
+ 8.  Notificação de proximidade de um agendamento (Uma semana de antecedência)
+ 9.  Avaliação de hotel garantida aos usuários após o último dia de estadia no hotel
+ 10. Listagem de agendamentos para cada usuário
+ 11. Listagem de agendamentos para cada hotel
  
 ## Comandos disponveis:
