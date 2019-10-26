@@ -1,16 +1,17 @@
-# p3-projeto-oo: Programa de Busca e booking de hoteis escrito em Python3.
+# p3-projeto-oo: Python3 program that can Find and book stays on registered hotels.
 
-## Funcionalidades:
- 1.  Cadastro de usuários
- 2.  Listagem de usuários com filtros
- 3.  Edição/Remoção de usuários
- 4.  Cadastro de hoteis
- 5.  Listagem de hotéis com filtros
- 6.  Edição/Remoção de hotéis
- 7.  Adição de agendamentos para um usuário cadastrado
- 8.  Notificação de proximidade de um agendamento (Uma semana de antecedência)
- 9.  Avaliação de hotel garantida aos usuários após o último dia de estadia no hotel
- 10. Listagem de agendamentos para cada usuário
- 11. Listagem de agendamentos para cada hotel
+## Functionalities:
+ 1.  User authentication
+ 2.  User listing with filters
+ 3.  Edit/remove users
+ 4.  Hotel creation
+ 5.  Hotel listing with filters
+ 6.  Edit/remove hotels
+ 7.  Book hotel to authenticated user
+ 8.  Notify user when booking date is approaching (One week before)
+ 9.  Users can rate hotels after their stay ends
+ 10. List user bookings
+ 11. List hotel bookings
+ 12. Database connection for data persistency (SQLite3)
  
-## Comandos disponveis:
+## Available commands:
