@@ -2,39 +2,58 @@ import bisect
 import math
 
 # Class checklist:
-# Update methods to use Database class [ ]
-# save() method that implements Creation and Updating on database
-# delete() method that deletes instance from database
-# fetch() method that returns a list containing instances in database (with filters)
-
-class State():
-	def __init__(self, name):
-		self.name = name
-
-class City():
-	def __init__(self, name, state):
-		self.name = name
-		self.state = state
+# Singleton Database instance [ ]
+# save() method that implements Creation and Updating on database [x]
+# delete() method that deletes instance from database [ ]
+# fetch() method that returns a list containing instances in database (with filters) [ ]
 
 class Hotel():
-	def __init__(self, name, city):
+	def __init__(self, name, city, state):
 		self.name = name
 		self.city = city
 		self.state = state
-		self.stars = []
-		self.stars_median = 0.0
 
-	def rate(self, rating=5):
-		# Ordered insert new rating in the 'stars' list
-		# the list must be sorted, so we can calculate the median
-		# TODO: update to database and queries
-		bisect.insort(self.stars, rating)
-		# Recalculate rating median
-		mid = math.floor(len(self.stars/2))
+	# Update instance on database
+	def save(self, database):
+		# Try to get current Hotel instance from database
 		try:
-			self.stars_median = self.stars[mid]
+			query = database.exec_sql("SELECT * FROM hotels WHERE name = :name", {'name': self.name})
+			instance = query.fetchone()
 		except:
-			pass
+			print('Database failure')
+
+		# If Hotel instance does not exist in database, create it
+		if(instance == None):
+			instance_dict = {
+				'name': self.name,
+				'city': self.city,
+				'state': self.state,
+			}
+			database.exec_sql("""INSERT INTO hotels
+								 VALUES (:name, :city, :state)""", instance_dict)
+		# otherwise, update existing instance to contain the new values
+		else:
+			update_dict = {
+				'name': self.name,
+				'city': self.city,
+				'state': self.state,
+			}
+			database.exec_sql("""UPDATE hotels
+								 SET name = :name, city = :city, state = :state
+								 WHERE name = :name""", update_dict)
+
+	def rate(self, rating=5, database):
+		# Try to add rating to the database
+		try:
+			instance_dict = {
+				'user': username,
+				'hotel': self.name,
+				'rating': rating,
+			}
+			database.exec_sql("""INSERT INTO ratings
+								 VALUES (:user, :hotel, :rating)""", instance_dict)
+		except:
+			print('Database failure')
 
 	def book(self, user, initial_datetime, final_datetime):
 		# PLACEHOLDER

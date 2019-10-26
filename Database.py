@@ -12,12 +12,13 @@ class Database():
 	# Execute SQL command using a cursor to the database
 	def exec_sql(self, str, data=None):
 		if(data == None):
-			self.cursor.execute(str)
+			result = self.cursor.execute(str)
 		else:
-			self.cursor.execute(str, data)
+			result = self.cursor.execute(str, data)
 
 		# Commit the changes made to the database
 		self.database.commit()
+		return result
 
 	# Close the connection to the database (called when the program closes)
 	def close(self):
