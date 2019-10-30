@@ -1,4 +1,4 @@
-# p3-projeto-oo: Python3 program that can Find and book stays on registered hotels.
+# p3-projeto-oo: Java program that can Find and book stays on registered hotels.
 
 ## Functionalities:
  1.  User authentication
