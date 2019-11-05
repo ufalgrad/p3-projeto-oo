@@ -12,6 +12,5 @@
  9.  Users can rate hotels after their stay ends
  10. List user bookings
  11. List hotel bookings
- 12. Database connection for data persistency (SQLite3)
  
 ## Available commands:
