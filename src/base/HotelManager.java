@@ -12,7 +12,7 @@ public class HotelManager extends User {
 		super(username, password);
 	}
 	
-	public Hotel RegisterHotel(String name, String description,
+	public Hotel registerHotel(String name, String description,
 							   String city, String state) throws IllegalArgumentException{
 		// Create new hotel instance
 		Hotel new_hotel = new Hotel(name, description, city, state);
