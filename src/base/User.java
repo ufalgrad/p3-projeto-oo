@@ -2,10 +2,10 @@ package base;
 
 public abstract class User {
 	// User info
-	String username;
-	String first_name;
-	String last_name;
-	String token;
+	protected String username;
+	protected String first_name;
+	protected String last_name;
+	private String token;
 	
 	
 	public User(String username, String token) {
@@ -41,7 +41,7 @@ public abstract class User {
 		this.username = username ;
 	}
 	
-	public boolean check_token(String token) {
+	public boolean checkToken(String token) {
 		return token.equals(this.token);
 	}
 }

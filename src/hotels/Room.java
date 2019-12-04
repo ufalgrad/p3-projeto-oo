@@ -1,20 +1,44 @@
 package hotels;
 
-import java.util.LinkedList;
-
 public class Room {
-	int number;
-	LinkedList<Bed> beds = new LinkedList<>();
+	private int number;
+	private int single_beds;
+	private int double_beds;
+	private boolean bathtub;
+	private boolean available;
 	
-	public Room(int number) {
+	public Room(int number, int single_beds, int double_beds, boolean bathtub) {
 		this.number = number;
+		this.single_beds = single_beds;
+		this.double_beds = double_beds;
+		this.bathtub = bathtub;
 	}
 	
-	public void AddBed(Bed bed) {
-		beds.add(bed);
+	boolean hasBathtub() {
+		return bathtub;
 	}
 	
-	public void RemoveBed(Bed bed) {
-		beds.remove(bed);
+	int getBeds() {
+		return single_beds + double_beds;
+	}
+	
+	int getSingleBeds() {
+		return single_beds;
+	}
+	
+	int getDoubleBeds() {
+		return double_beds;
+	}
+	
+	int getNumber() {
+		return number;
+	}
+	
+	public boolean isAvailable() {
+		return available;
+	}
+	
+	public void setAvailable(boolean status) {
+		available = status;
 	}
 }

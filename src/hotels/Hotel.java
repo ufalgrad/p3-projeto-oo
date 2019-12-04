@@ -7,13 +7,16 @@ public class Hotel {
 	private String description;
 	private String city;
 	private String state;
+	private String manager_uname;
 	private ArrayList<Room> rooms = new ArrayList<>();
 	private ArrayList<Integer> ratings = new ArrayList<>();
+	private double rating_total;
+	private int rated_count;
 	
-	// This variable stores the number of the last room added +1
+	// This variable stores the number of rooms added
 	int room_number = 0;
 	
-	public Hotel(String name, String description, String city, String state) {
+	public Hotel(String name, String description, String city, String state, String manager) {
 		this.setName(name);
 		this.setDescription(description);
 		this.setCity(city);
@@ -82,5 +85,19 @@ public class Hotel {
 
 	public void setRatings(ArrayList<Integer> ratings) {
 		this.ratings = ratings;
+	}
+	
+	public String getManager() {
+		return manager_uname;
+	}
+	
+	public double getRating() {
+		return rating_total / rated_count;
+	}
+	
+	public double rate(double score) {
+		rated_count += 1;
+		rating_total = rating_total+score;
+		return rating_total / rated_count;
 	}
 }

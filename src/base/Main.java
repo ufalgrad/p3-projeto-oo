@@ -4,6 +4,8 @@ import java.util.Scanner;
 
 public class Main {
 	
+	// Stores current user's session
+	public User current_user;
 	
 	public static void main(String[] args) {
 		System.out.println("Hello World!");
