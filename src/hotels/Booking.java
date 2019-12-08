@@ -1,13 +1,15 @@
 package hotels;
 
-import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import base.Util;
 
 public class Booking {
 	private String user;
 	private String hotel;
 	GregorianCalendar check_in = new GregorianCalendar(2018, 6, 28);
     GregorianCalendar check_out = new GregorianCalendar(2018, 5, 28);
+    // Get singleton class Util's instance
+    Util util = Util.getInstance();
     
     public Booking(String username, String hotel_name, GregorianCalendar check_in, GregorianCalendar check_out) {
     	this.user = username;
@@ -24,6 +26,11 @@ public class Booking {
     	return hotel;
     }
     
+    /**
+     * Compares this instance's hotel_name name to a given hotel_name string
+     * @param hotel_name String to be compared
+     * @return the result of this comparison
+     */
     public boolean checkHotel(String hotel_name) {
     	return hotel.equals(hotel_name);
     }
@@ -36,15 +43,21 @@ public class Booking {
     	return check_out;
     }
     
+    /**
+     * Gets check-in date formatted as String
+     * @return String containing the formatted date
+     * @see base.Util#dateToString()
+     */
     public String getCheckinString() {
-    	SimpleDateFormat formattedDate = new SimpleDateFormat("yyyy/MM/dd"); 
-	    String dateFormatted = formattedDate.format(check_in.getTime());
-	    return dateFormatted;
+    	return util.dateToString(check_in);
     }
     
+    /**
+     * Gets check-out date formatted as String
+     * @return String containing the formatted date
+     * @see base.Util#dateToString()
+     */
     public String getCheckoutString() {
-    	SimpleDateFormat formattedDate = new SimpleDateFormat("yyyy/MM/dd"); 
-	    String dateFormatted = formattedDate.format(check_out.getTime());
-	    return dateFormatted;
+    	return util.dateToString(check_in);
     }
 }

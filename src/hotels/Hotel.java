@@ -9,7 +9,6 @@ public class Hotel {
 	private String state;
 	private String manager_uname;
 	private ArrayList<Room> rooms = new ArrayList<>();
-	private ArrayList<Integer> ratings = new ArrayList<>();
 	private double rating_total;
 	private int rated_count;
 	
@@ -23,30 +22,63 @@ public class Hotel {
 		this.setState(state);
 	}
 	
+	/**
+	 * Add a single room to the current Hotel instance
+	 * @param room Room instance to be associated to this hotel
+	 * @return room number
+	 */
 	public int addRoom(Room room) {
 		rooms.add(room);
 		room_number++;
 		return room_number;
 	}
-	// Add many rooms using an array
+	/**
+	 * Add many rooms using a Room instance array
+	 * @param rooms_to_add array containing all rooms to be added
+	 * @return room number of last added room
+	 */
 	public int addRooms(Room[] rooms_to_add) {
 		for(Room room: rooms_to_add) {
-			rooms.add(room);
-			room_number++;
-		}
-		// Return the new room_number after adding all rooms in the rooms_to_add array
-		return room_number;
-	}
-	// Add many rooms using only one room template (overload)
-	public int addRooms(Room room, int rooms_to_add) {
-		for(int i = 0; i < rooms_to_add; i++) {
-			rooms.add(room);
-			room_number++;
+			addRoom(room);
 		}
 		// Return the new room_number after adding all rooms in the rooms_to_add array
 		return room_number;
 	}
 
+	/**
+	 * Add many copies of the same Room instance based on a limit quantity
+	 * @param room The Room instance to be added
+	 * @param rooms_to_add the ammount of clones of the same room to be added
+	 * @return the number of the last room added
+	 */
+	public int addRooms(Room room, int rooms_to_add) {
+		for(int i = 0; i < rooms_to_add; i++) {
+			addRoom(room);
+		}
+		// Return the new room_number after adding all rooms in the rooms_to_add array
+		return room_number;
+	}
+	
+	/**
+	 * Returns calculated rating for this hotel
+	 * @return the calculated hotel score
+	 */
+	public double getRating() {
+		return rating_total / rated_count;
+	}
+	
+	
+	/**
+	 * Updates variables used to calculate rating of this hotel with a score variable
+	 * @param score contains the new score that will influence the rating calculation
+	 * @return the resulting score for this hotel after the new rating was added
+	 */
+	public double rate(double score) {
+		rated_count += 1;
+		rating_total = rating_total+score;
+		return rating_total / rated_count;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -78,26 +110,8 @@ public class Hotel {
 	public void setState(String state) {
 		this.state = state;
 	}
-
-	public ArrayList<Integer> getRatings() {
-		return ratings;
-	}
-
-	public void setRatings(ArrayList<Integer> ratings) {
-		this.ratings = ratings;
-	}
 	
 	public String getManager() {
 		return manager_uname;
-	}
-	
-	public double getRating() {
-		return rating_total / rated_count;
-	}
-	
-	public double rate(double score) {
-		rated_count += 1;
-		rating_total = rating_total+score;
-		return rating_total / rated_count;
 	}
 }
