@@ -2,7 +2,7 @@ package base;
 
 public class RegularUser extends User {
 	// User preferences
-	int minimum_star_requirement = 3;
+	int minimum_star_requirement = 1;
 	int total_bookings = 0;
 	
 	public RegularUser(String username, String password) {
@@ -10,8 +10,8 @@ public class RegularUser extends User {
 	}
 	
 	@Override
-	public String getType() {
-		return "regular";
+	public UserType getType() {
+		return UserType.RegularUser;
 	}
 	
 	public void setRequirement(int stars) {

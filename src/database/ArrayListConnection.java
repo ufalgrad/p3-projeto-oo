@@ -99,20 +99,23 @@ public class ArrayListConnection implements Connection {
      * {@inheritDoc}
      */
 	@Override
-	public User editUser(String username, String f_name, String l_name, String old_token, String new_token) {
+	public User editUser(String old_uname, String username, String f_name, String l_name, String old_token, String new_token) {
 		for(User user: getUsers()) {
-			if(user.getUsername().equals(username)) {
+			if(user.getUsername().equals(old_uname)) {
 				if(user.checkToken(old_token)) {
 					String current_fname = user.getName().split(" ")[0];
 					String current_lname = user.getName().split(" ")[1];
 					//EDIT USER
 					if(!username.equals("")) {
+						System.out.println("New username: "+username);
 						user.setUsername(username);
 					}
 					if(!f_name.equals("")) {
+						System.out.println("New first name: "+f_name);
 						user.setName(f_name, current_lname);
 					}
 					if(!l_name.equals("")) {
+						System.out.println("New last name: "+l_name);
 						user.setName(current_fname, l_name);
 					}
 					user.setPassword(old_token, new_token);

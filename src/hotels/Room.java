@@ -5,7 +5,6 @@ public class Room {
 	private int single_beds;
 	private int double_beds;
 	private boolean bathtub;
-	private boolean available;
 	
 	public Room(int number, int single_beds, int double_beds, boolean bathtub) {
 		this.number = number;
@@ -14,31 +13,36 @@ public class Room {
 		this.bathtub = bathtub;
 	}
 	
-	boolean hasBathtub() {
+	public boolean hasBathtub() {
 		return bathtub;
 	}
 	
-	int getBeds() {
+	public int getBeds() {
 		return single_beds + double_beds;
 	}
 	
-	int getSingleBeds() {
+	public int getSingleBeds() {
 		return single_beds;
 	}
 	
-	int getDoubleBeds() {
+	public int getDoubleBeds() {
 		return double_beds;
 	}
 	
-	int getNumber() {
+	public int getNumber() {
 		return number;
 	}
 	
-	public boolean isAvailable() {
-		return available;
-	}
-	
-	public void setAvailable(boolean status) {
-		available = status;
+	public boolean checkType(Room room) {
+		int single_beds = room.getSingleBeds();
+		int double_beds = room.getDoubleBeds(); 
+		boolean bathtub = room.hasBathtub();
+		
+		if(getSingleBeds() == single_beds && getDoubleBeds() == double_beds && hasBathtub() == bathtub) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }

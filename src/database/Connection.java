@@ -30,7 +30,7 @@ public interface Connection {
 	 * @param token new hashed password
 	 * @return Updated User instance containing new user info
 	 */
-	public User editUser(String username, String f_name, String l_name, String old_token, String new_token);
+	public User editUser(String old_uname, String username, String f_name, String l_name, String old_token, String new_token);
 
     /**
      * Queries the database and returns all hotels in an ArrayList

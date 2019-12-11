@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import database.ArrayListConnection;
 import database.InputManager;
+import exceptions.NonUniqueColumnException;
 import hotels.Booking;
 import hotels.Hotel;
 
@@ -29,7 +30,7 @@ public class Menu {
 		manager.close();
 	}
 	
-	public void selectUserOption() throws NoSuchAlgorithmException, InputMismatchException {
+	public void selectUserOption() throws NoSuchAlgorithmException, InputMismatchException, NonUniqueColumnException {
 
 		if(user == null) {
 		System.out.println("1. Sign up");
@@ -37,15 +38,18 @@ public class Menu {
 		}
 		else {
 			System.out.println("3. Log out");
-			if(user.getType().equals("regular")) {
-				System.out.println("4. List hotels");
-				System.out.println("5. Book a stay");
-				System.out.println("6. List your bookings");
+			System.out.println("4. Edit profile");
+			if(user.getType() == UserType.RegularUser) {
+				System.out.println("5. List hotels");
+				System.out.println("6. Book a stay");
+				System.out.println("7. List your bookings");
+				System.out.println("8. Set star requirement");
+				System.out.println("9. Rate hotel");
 			}
 			else {
-				System.out.println("4. Add hotel");
-				System.out.println("5. Edit hotel");
-				System.out.println("6. Show hotel bookings");
+				System.out.println("5. Add hotel");
+				System.out.println("6. Edit hotel");
+				System.out.println("7. Show hotel bookings");
 			}
 		}
 
@@ -57,6 +61,14 @@ public class Menu {
 			// Registration logic in the menu class to retain access to the user's token
 			System.out.println("Username:");
 			String username = in.nextLine();
+			User validation = conn.findUser(username);
+			if(validation != null) {
+				throw new NonUniqueColumnException("username");
+			}
+			System.out.println("First name:");
+			String f_name = in.nextLine();
+			System.out.println("Last name:");
+			String l_name = in.nextLine();
 			System.out.println("Password:");
 			String pass = in.nextLine();
 			System.out.println("Confirm password:");
@@ -81,6 +93,7 @@ public class Menu {
 				manager.addUser(username, token);
 			}
 			user = manager.login(username, token);
+			user.setName(f_name, l_name);
 			System.out.println("Registration successful.");
 			System.out.println("Authenticated as "+user.getName());
 		}
@@ -101,7 +114,15 @@ public class Menu {
 				System.out.println("Logged out successfully");
 			}
 			else if(choice == 4) {
-				if(user.getType().equals("regular")) {
+				String f_name = user.getName().split(" ")[0];
+				String l_name = user.getName().split(" ")[1];
+				System.out.println("Password:");
+				String pass = in.nextLine();
+				String token = util.hashPassword(pass);
+				manager.editUser(user.getUsername(), f_name, l_name, token);
+			}
+			else if(choice == 5) {
+				if(user.getType() == UserType.RegularUser) {
 					System.out.println("Find hotels:");
 					System.out.println("Name filter (blank for none):");
 					String name = in.nextLine();
@@ -116,8 +137,8 @@ public class Menu {
 					manager.addHotel(user.getUsername());
 				}
 			}
-			else if(choice == 5) {
-				if(user.getType().equals("regular")) {
+			else if(choice == 6) {
+				if(user.getType() == UserType.RegularUser) {
 					System.out.println("Book a stay:");
 					System.out.println("Enter the name of the hotel to request a reservation:");
 					String name = in.nextLine();
@@ -126,6 +147,7 @@ public class Menu {
 						Booking result = manager.addBooking(((RegularUser) user), hotel);
 						if(result != null) {
 							System.out.println("Booked your stay for "+result.getCheckinString());
+							((RegularUser) user).incrementBookings();
 						}
 					}
 					else {
@@ -139,8 +161,8 @@ public class Menu {
 					manager.editHotel(name, user);
 				}
 			}
-			else if(choice == 6) {
-				if(user.getType().equals("regular")) {
+			else if(choice == 7) {
+				if(user.getType() == UserType.RegularUser) {
 					manager.findBookings(user);
 				}
 				else {
@@ -148,6 +170,25 @@ public class Menu {
 					System.out.println("Enter the name of the hotel you want to query:");
 					String name = in.nextLine();
 					manager.findBookings(name);
+				}
+			}
+			else if(choice == 8) {
+				if(user.getType() == UserType.RegularUser) {
+					System.out.println("Set your minimum star requirement (current: "+((RegularUser) user).getRequirement()+")");
+					int req = in.nextInt();
+					in.nextLine();
+					((RegularUser) user).setRequirement(req);
+					System.out.println("Requirement updated to "+((RegularUser) user).getRequirement()+" stars.");
+				}
+			}
+			else if(choice == 9) {
+				if(user.getType() == UserType.RegularUser) {
+					System.out.println("Rate a hotel:");
+					System.out.println("Enter hotel name:");
+					String name = in.nextLine();
+					Hotel hotel = conn.findHotel(name);
+					manager.rateHotel(user, hotel);
+					
 				}
 			}
 		}

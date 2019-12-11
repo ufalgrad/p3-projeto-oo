@@ -7,10 +7,10 @@ public class Hotel {
 	private String description;
 	private String city;
 	private String state;
-	private String managerUsername;
+	private String manager_username;
 	private ArrayList<Room> rooms = new ArrayList<>();
-	private double rating_total;
-	private int rated_count;
+	private double rating_total = 0;
+	private int rated_count = 1;
 	
 	// This variable stores the number of rooms added
 	int room_number = 0;
@@ -20,7 +20,15 @@ public class Hotel {
 		this.setDescription(description);
 		this.setCity(city);
 		this.setState(state);
-		this.managerUsername = manager;
+		this.manager_username = manager;
+	}
+	
+	private double normalize(double score) {
+		if(score > 5)
+			score = 5;
+		else if(score < 1)
+			score = 1;
+		return score;
 	}
 	
 	/**
@@ -65,7 +73,7 @@ public class Hotel {
 	 * @return the calculated hotel score
 	 */
 	public double getRating() {
-		return rating_total / rated_count;
+		return normalize(rating_total / rated_count);
 	}
 	
 	
@@ -75,6 +83,8 @@ public class Hotel {
 	 * @return the resulting score for this hotel after the new rating was added
 	 */
 	public double rate(double score) {
+		score = normalize(score);
+		
 		rated_count += 1;
 		rating_total = rating_total+score;
 		return rating_total / rated_count;
@@ -113,6 +123,17 @@ public class Hotel {
 	}
 	
 	public String getManager() {
-		return managerUsername;
+		return manager_username;
+	}
+	
+	public Room getRoom(int single_beds, int double_beds, boolean bathtub) {
+		for(Room room: rooms) {
+			if(room.getSingleBeds() == single_beds &&
+			   room.getDoubleBeds() == double_beds &&
+			   room.hasBathtub() == bathtub) {
+				return room;
+			}
+		}
+		return null;
 	}
 }

@@ -10,6 +10,7 @@ import base.HotelManager;
 import base.RegularUser;
 import base.User;
 import base.Util;
+import exceptions.NonUniqueColumnException;
 import hotels.Booking;
 import hotels.Hotel;
 import hotels.Room;
@@ -137,7 +138,7 @@ public class InputManager {
 							new_token = util.hashPassword(pass);
 						}
 						
-						conn.editUser(uname, fname, lname, token, new_token);
+						conn.editUser(u_name, uname, fname, lname, token, new_token);
 		}
 		
 		
@@ -147,10 +148,15 @@ public class InputManager {
 			return result;
 		}
 		
-		public Hotel addHotel(String manager) throws InputMismatchException {
+		public Hotel addHotel(String manager) throws InputMismatchException, NonUniqueColumnException {
 			// Get hotel info
 			System.out.println("name: ");
 			String name = in.nextLine();
+
+			Hotel validation = conn.findHotel(name);
+			if(validation != null) {
+				throw new NonUniqueColumnException("hotel_name");
+			}
 			System.out.println("description: ");
 			String description = in.nextLine();
 			System.out.println("city: ");
@@ -194,17 +200,20 @@ public class InputManager {
 			int total = 0;
 			// iterate through user_list and print results from filtering
 			for(Hotel hotel: conn.getHotels()) {
-				if(hotel.getName().equals(name) || name.equals("")) {
-					System.out.println("name match: "+hotel.getName());
-					total += 1;
-				}
-				if(hotel.getCity().equals(city) || city.equals("")) {
-					System.out.println("city match: "+hotel.getCity());
-					total += 1;
-				}
-				if(hotel.getState().equals(state) || state.equals("")) {
-					System.out.println("state match: "+hotel.getState());
-					total += 1;
+				if(hotel.getName().equals(name) || name.equals("") ||
+				   hotel.getCity().equals(city) || city.equals("") || 
+				   hotel.getState().equals(state) || state.equals("")) {
+					if(hotel.getRating() >= rating) {
+						System.out.println("----------");
+						System.out.println(hotel.getName());
+						System.out.print("Rating: ");
+						for(int i = 0; i < hotel.getRating(); i++) {
+							System.out.print("*");
+						}
+						System.out.println();
+						System.out.println("----------");
+						total += 1;
+					}
 				}
 			}
 			if(total == 0) {
@@ -274,9 +283,18 @@ public class InputManager {
 					Integer.parseInt(checkOutArray[2])
 			);
 			
+			System.out.println("How many single beds do you need?");
+			int single_beds = in.nextInt();
+			System.out.println("How many double beds do you need?");
+			int double_beds = in.nextInt();
+			System.out.println("Do you want your room to have a bathtub (true/false)?");
+			boolean bathtub = in.nextBoolean();
+			
+			Room room = hotel.getRoom(single_beds, double_beds, bathtub);
+			
 			// Check for overlap between bookings in the same hotel
-			if(!isOverlapping(hotel.getName(), start, end)) {
-				result = new Booking(user.getUsername(), hotel.getName(), start, end);
+			if(!isOverlapping(hotel.getName(), room, start, end)) {
+				result = new Booking(user.getUsername(), hotel.getName(), room, start, end);
 				conn.insertBooking(result);
 				System.out.println("Your booking was made.");
 			} else {
@@ -285,12 +303,14 @@ public class InputManager {
 			return result;
 		}
 		
-		public boolean isOverlapping(String hotel_name, GregorianCalendar start, GregorianCalendar end) {
+		public boolean isOverlapping(String hotel_name, Room room, GregorianCalendar start, GregorianCalendar end) {
 			for(Booking booking: conn.getBookings()) {
 				if(booking.checkHotel(hotel_name)) {
 					// CHECK IF DATES OVERLAP
 					if(start.before(booking.getCheckout()) && booking.getCheckin().before(end)) {
-						return true;
+						if(booking.getRoom().checkType(room)) {
+							return true;
+						}
 					}
 				}
 			}
@@ -337,5 +357,26 @@ public class InputManager {
 					}
 				}
 			}
+		}
+		
+		public void rateHotel(User user, Hotel hotel) {
+			GregorianCalendar now = (GregorianCalendar) GregorianCalendar.getInstance();
+			for(Booking booking: conn.getBookings()) {
+				if(user.getUsername().equals(booking.getUser()) && hotel.getName().equals(booking.getHotel())) {
+					if(booking.getCheckout().before((now))) {
+						System.out.println("Rate your stay at "+hotel.getName()+" (1-5 stars):");
+						int rating = in.nextInt();
+						in.nextLine();
+						hotel.rate((double) rating);
+						System.out.print("Rated: ");
+						for(int i = 0; i < rating; i++) {
+							System.out.print("*");
+						}
+						System.out.println();
+						return;
+					}
+				}
+			}
+			System.out.println("Could not rate selected hotel.");
 		}
 }

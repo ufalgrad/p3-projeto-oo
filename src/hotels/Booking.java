@@ -6,16 +6,18 @@ import base.Util;
 public class Booking {
 	private String user;
 	private String hotel;
-	GregorianCalendar check_in = new GregorianCalendar(2018, 6, 28);
-    GregorianCalendar check_out = new GregorianCalendar(2018, 5, 28);
+	private GregorianCalendar check_in;
+    private GregorianCalendar check_out;
+    private Room room;
     // Get singleton class Util's instance
     Util util = Util.getInstance();
     
-    public Booking(String username, String hotel_name, GregorianCalendar check_in, GregorianCalendar check_out) {
+    public Booking(String username, String hotel_name, Room room, GregorianCalendar check_in, GregorianCalendar check_out) {
     	this.user = username;
     	this.hotel = hotel_name;
     	this.check_in = check_in;
     	this.check_out = check_out;
+    	this.room = room;
     }
     
     public String getUser() {
@@ -59,5 +61,9 @@ public class Booking {
      */
     public String getCheckoutString() {
     	return util.dateToString(check_out);
+    }
+    
+    public Room getRoom() {
+    	return room;
     }
 }

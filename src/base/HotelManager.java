@@ -7,8 +7,8 @@ public class HotelManager extends User {
 	}
 	
 	@Override
-	public String getType() {
-		return "manager";
+	public UserType getType() {
+		return UserType.HotelManager;
 	}
 
 }

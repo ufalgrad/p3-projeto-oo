@@ -14,14 +14,14 @@ public abstract class User {
 		this.token = token;
 	}
 
-	public abstract String getType();
+	public abstract UserType getType();
 
 	/**
 	 * Returns the full name of current user
 	 * @return string concatenation of first_name and last_name
 	 */
 	public String getName() {
-		return first_name + last_name;
+		return first_name + " "+ last_name;
 	}
 	
 	/**

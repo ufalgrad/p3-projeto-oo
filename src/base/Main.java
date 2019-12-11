@@ -4,6 +4,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import exceptions.NonUniqueColumnException;
+
 public class Main {
 	
 	// Stores current user's session
@@ -11,16 +13,19 @@ public class Main {
 	private static Menu menu;
 	static Scanner in = new Scanner(System.in);
 	
-	public static void main(String[] args) {
+	public static void main(String[] args)   {
 		menu = new Menu(in);
 		boolean running = true;
 		while(running) {
 			try {
 				menu.selectUserOption();
 			} catch (NoSuchAlgorithmException | InputMismatchException | NullPointerException e) {
-				// TODO Auto-generated catch block
-				System.out.println("Deu ruim irmao");
+				System.out.println("Entrada inválida.");
+				// DEBUG: e.printStackTrace();
 				in.next();
+			} catch (NonUniqueColumnException e) {
+				System.out.println(e.getMessage());
+				continue;
 			}
 		}
 	}
