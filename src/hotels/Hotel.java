@@ -7,7 +7,7 @@ public class Hotel {
 	private String description;
 	private String city;
 	private String state;
-	private String manager_uname;
+	private String managerUsername;
 	private ArrayList<Room> rooms = new ArrayList<>();
 	private double rating_total;
 	private int rated_count;
@@ -20,6 +20,7 @@ public class Hotel {
 		this.setDescription(description);
 		this.setCity(city);
 		this.setState(state);
+		this.managerUsername = manager;
 	}
 	
 	/**
@@ -112,6 +113,6 @@ public class Hotel {
 	}
 	
 	public String getManager() {
-		return manager_uname;
+		return managerUsername;
 	}
 }

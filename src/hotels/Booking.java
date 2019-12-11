@@ -58,6 +58,6 @@ public class Booking {
      * @see base.Util#dateToString()
      */
     public String getCheckoutString() {
-    	return util.dateToString(check_in);
+    	return util.dateToString(check_out);
     }
 }

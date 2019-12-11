@@ -9,6 +9,11 @@ public class RegularUser extends User {
 		super(username, password);
 	}
 	
+	@Override
+	public String getType() {
+		return "regular";
+	}
+	
 	public void setRequirement(int stars) {
 		// Validate user's star requirement
 		if(stars < 1)
@@ -17,6 +22,10 @@ public class RegularUser extends User {
 			stars = 5;
 				
 		minimum_star_requirement = stars;
+	}
+	
+	public int getRequirement() {
+		return minimum_star_requirement;
 	}
 	
 	public void incrementBookings() {

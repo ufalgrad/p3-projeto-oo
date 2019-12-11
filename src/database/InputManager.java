@@ -1,7 +1,9 @@
 package database;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import base.HotelManager;
@@ -14,21 +16,63 @@ import hotels.Room;
 
 public class InputManager {
 	
-		// Get the static instance of singleton class Util
-		Util util = Util.getInstance();
-		// Get the static instance of singleton class Connection
-		ArrayListConnection conn = ArrayListConnection.getInstance();
+		Util util;
+		ArrayListConnection conn;
+		Scanner in;
 		
-		public InputManager() {}
+		public InputManager(Scanner input) {
+			in = input;
+			// Get the static instance of singleton class Util
+			util = Util.getInstance();
+			// Get the static instance of singleton class Connection
+			conn = ArrayListConnection.getInstance();
+		}
 		
-		public Hotel findHotel(String hotel_name) throws IllegalArgumentException {
-			for(Hotel hotel: conn.getHotels()) {
-				if(hotel.getName().equals(hotel_name)) {
-					return hotel;
-				}
+		public void close() {
+			conn.close();
+			in.close();
+		}
+		
+		/**
+		 * Gets username and password and tries to match existing user with hashed password token on the database
+		 * @return authenticated User instance if login was successful, or none if username/password was incorrect
+		 * @throws NoSuchAlgorithmException
+		 * @throws InputMismatchException
+		 * @see base.User#logIn(String)
+		 */
+		public User login() throws NoSuchAlgorithmException, InputMismatchException {
+			System.out.println("Username:");
+			String username = in.nextLine();
+			System.out.println("Password:");
+			String pass = in.nextLine();
+			String token = util.hashPassword(pass);
+			User user = conn.findUser(username);
+			if(user.logIn(token)) {
+				findUpcomingStays(user);
+				return user;
 			}
-			// Return null if hotel matching name was not found
 			return null;
+		}
+		
+		/**
+		 * Gets username and password and tries to match existing user with hashed password token on the database
+		 * @return authenticated User instance if login was successful, or none if username/password was incorrect
+		 * @throws NoSuchAlgorithmException
+		 * @throws InputMismatchException
+		 * @see base.User#logIn(String)
+		 */
+		public User login(String username, String token) throws NoSuchAlgorithmException, InputMismatchException {
+			User user = conn.findUser(username);
+			if(user.logIn(token)) {
+				findUpcomingStays(user);
+				return user;
+			}
+			return null;
+		}
+		
+		public void logout(String username) {
+			User user = conn.findUser(username);
+			user.logOut();
 		}
 		
 		/**
@@ -43,7 +87,7 @@ public class InputManager {
 			return result;
 		}
 		
-		public void listUsers(String u_name, String f_name, String l_name) throws IllegalArgumentException {
+		public void listUsers(String u_name, String f_name, String l_name) throws InputMismatchException {
 			int total = 0;
 			// iterate through user_list and print results from filtering
 			for(User user: conn.getUsers()) {
@@ -65,68 +109,45 @@ public class InputManager {
 			}
 		}
 		
-		public void editUser(String u_name, String token) throws NoSuchAlgorithmException, IllegalArgumentException {
-			for(User user: conn.getUsers()) {
-				if(user.getUsername().equals(u_name)) {
-					if(user.checkToken(token)) {
-						Scanner in = new Scanner(System.in);
-						String input;
-						String f_name = user.getName().split(" ")[0];
-						String l_name = user.getName().split(" ")[1];
-						
-						System.out.println("Edit user: "+user.getName());
+		public void editUser(String u_name, String f_name, String l_name, String token) throws NoSuchAlgorithmException, InputMismatchException {
+						System.out.println("Edit user: "+u_name);
 						
 						System.out.println("Change username (or blank to maintain current value): ");
-						System.out.println("Current value: "+user.getUsername());
+						System.out.println("Current value: "+u_name);
 						// get next value and update user if user input was given
-						input = in.nextLine();
-						if(!input.equals("")) {
-							user.setUsername(input);
-						}
+						String uname = in.nextLine();
 						
 						System.out.println("Change first name (or blank to maintain current value): ");
 						System.out.println("Current value: "+f_name);
 						// get next value and update user if user input was given
-						input = in.nextLine();
-						if(!input.equals("")) {
-							user.setName(input, l_name);
-						}
+						String fname = in.nextLine();
 						
 						System.out.println("Change last name (or blank to maintain current value): ");
 						System.out.println("Current value: "+l_name);
 						// get next value and update user if user input was given
-						input = in.nextLine();
-						if(!input.equals("")) {
-							user.setName(f_name, input);
-						}
+						String lname = in.nextLine();
 						
 						System.out.println("Change password (or blank to maintain current value): ");
 						System.out.print("Current value: ");
 						
 						// get next value and update user if user input was given
-						input = in.nextLine();
-						if(!input.equals("")) {
-							String new_token = util.hashPassword(input);
-							user.setPassword(token, new_token);
+						String pass = in.nextLine();
+						String new_token = token;
+						if(!pass.equals("")) {
+							new_token = util.hashPassword(pass);
 						}
 						
-						System.out.println("Edit user: "+user.getName());
-						
-						in.close();
-					}
-				}
-			}
+						conn.editUser(uname, fname, lname, token, new_token);
 		}
 		
 		
-		public HotelManager addManager(String username, String token) throws IllegalArgumentException {
+		public HotelManager addManager(String username, String token) throws InputMismatchException {
 			HotelManager result = new HotelManager(username, token);
 			conn.insertUser(result);
 			return result;
 		}
 		
-		public Hotel addHotel(String manager) throws IllegalArgumentException {
-			Scanner in = new Scanner(System.in);
+		public Hotel addHotel(String manager) throws InputMismatchException {
 			// Get hotel info
 			System.out.println("name: ");
 			String name = in.nextLine();
@@ -165,7 +186,6 @@ public class InputManager {
 				System.out.println("Do you want to add another room? (true/false)");
 				register_another = in.nextBoolean();
 			}
-			in.close();
 			conn.insertHotel(new_hotel);
 			return new_hotel;
 		}
@@ -175,15 +195,15 @@ public class InputManager {
 			// iterate through user_list and print results from filtering
 			for(Hotel hotel: conn.getHotels()) {
 				if(hotel.getName().equals(name) || name.equals("")) {
-					System.out.println("name match: "+name);
+					System.out.println("name match: "+hotel.getName());
 					total += 1;
 				}
 				if(hotel.getCity().equals(city) || city.equals("")) {
-					System.out.println("city match: "+city);
+					System.out.println("city match: "+hotel.getCity());
 					total += 1;
 				}
 				if(hotel.getState().equals(state) || state.equals("")) {
-					System.out.println("state match: "+state);
+					System.out.println("state match: "+hotel.getState());
 					total += 1;
 				}
 			}
@@ -192,10 +212,10 @@ public class InputManager {
 			}
 		}
 		
-		public void editHotel(String hotel_name, User user) throws IllegalArgumentException {
-			Hotel hotel = findHotel(hotel_name);
-			if(hotel.getManager().equals(user.getUsername())) {
-				Scanner in = new Scanner(System.in);
+		public void editHotel(String hotel_name, User user) throws InputMismatchException {
+				
+				Hotel hotel = conn.findHotel(hotel_name);
+				if(hotel != null) {
 				// Get hotel info
 				System.out.println("name: ");
 				String name = in.nextLine();
@@ -206,19 +226,22 @@ public class InputManager {
 				System.out.println("state: ");
 				String state = in.nextLine();
 
-				// Update hotel instance
-				hotel.setName(name);
-				hotel.setDescription(description);
-				hotel.setCity(city);
-				hotel.setState(state);
-						
-				in.close();
-			}
+				if(hotel.getManager().equals(user.getUsername())) {
+					// Update hotel instance
+					conn.editHotel(name, description, city, state);
+					System.out.println("Hotel "+hotel.getName()+" edited successfully");
+				}
+				else {
+					System.out.println("You did not register this hotel.");
+				}
+				}
+				else {
+					System.out.println("This hotel does not exist.");
+				}
 		}
 		
-		public Booking addBooking(RegularUser user, Hotel hotel) throws IllegalArgumentException {
+		public Booking addBooking(RegularUser user, Hotel hotel) throws InputMismatchException {
 			Booking result = null;
-			Scanner in = new Scanner(System.in);
 			// Get check-in date from user
 			System.out.println("Input booking check-in date (YYYY/MM/DD): ");
 			String checkInStr =  in.nextLine();
@@ -255,10 +278,10 @@ public class InputManager {
 			if(!isOverlapping(hotel.getName(), start, end)) {
 				result = new Booking(user.getUsername(), hotel.getName(), start, end);
 				conn.insertBooking(result);
+				System.out.println("Your booking was made.");
 			} else {
 				System.out.println("Your booking conflicts with existing booking on that hotel");
 			}
-			in.close();
 			return result;
 		}
 		
@@ -286,6 +309,33 @@ public class InputManager {
 			}
 			if(total == 0) {
 				System.out.println("No bookings yet...");
+			}
+		}
+		public void findBookings(String hotel_name) {
+			int total = 0;
+			for(Booking booking: conn.getBookings()) {
+				if(hotel_name.equals(booking.getHotel())) {
+					String date = booking.getCheckinString() + " - " + booking.getCheckoutString();
+					String result = date + ": " + booking.getHotel();
+					System.out.println(result);
+					total += 1;
+				}
+			}
+			if(total == 0) {
+				System.out.println("No bookings yet...");
+			}
+		}
+		
+		public void findUpcomingStays(User user) {
+			GregorianCalendar limit = (GregorianCalendar) GregorianCalendar.getInstance();
+			limit.add(Calendar.DATE, 7);
+			for(Booking booking: conn.getBookings()) {
+				if(user.getUsername().equals(booking.getUser())) {
+					if(booking.getCheckin().before((limit))) {
+						System.out.println("Upcoming booking:");
+						System.out.println(booking.getHotel()+": "+booking.getCheckinString()+" - "+booking.getCheckoutString());
+					}
+				}
 			}
 		}
 }

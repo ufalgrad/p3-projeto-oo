@@ -27,6 +27,58 @@ public class ArrayListConnection implements Connection {
         return InstanceHolder.INSTANCE;
     }
     
+    public Hotel findHotel(String hotel_name) {
+		for(Hotel hotel: getHotels()) {
+			if(hotel.getName().equals(hotel_name)) {
+				return hotel;
+			}
+		}
+		// Return null if hotel matching name was not found
+		return null;
+	}
+    
+    public int findHotelId(String hotel_name) {
+    	int index = 0;
+		for(Hotel hotel: getHotels()) {
+			if(hotel.getName().equals(hotel_name)) {
+				return index;
+			}
+			index++;
+		}
+		// Return -1 if hotel matching name was not found
+		return -1;
+	}
+	
+	public User findUser(String username) {
+		for(User user: getUsers()) {
+			if(user.getUsername().equals(username)) {
+				return user;
+			}
+		}
+		// Return null if user matching username was not found
+		return null;
+	}
+	
+	public int findUserId(String username) {
+		int index = 0;
+		for(User user: getUsers()) {
+			if(user.getUsername().equals(username)) {
+				return index;
+			}
+			index++;
+		}
+		// Return -1 if user matching username was not found
+		return -1;
+	}
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() {
+    	System.out.println("Database connection terminated.");
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -46,6 +98,34 @@ public class ArrayListConnection implements Connection {
     /**
      * {@inheritDoc}
      */
+	@Override
+	public User editUser(String username, String f_name, String l_name, String old_token, String new_token) {
+		for(User user: getUsers()) {
+			if(user.getUsername().equals(username)) {
+				if(user.checkToken(old_token)) {
+					String current_fname = user.getName().split(" ")[0];
+					String current_lname = user.getName().split(" ")[1];
+					//EDIT USER
+					if(!username.equals("")) {
+						user.setUsername(username);
+					}
+					if(!f_name.equals("")) {
+						user.setName(f_name, current_lname);
+					}
+					if(!l_name.equals("")) {
+						user.setName(current_fname, l_name);
+					}
+					user.setPassword(old_token, new_token);
+					return user;
+				}
+			}
+		}
+		return null;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ArrayList<Hotel> getHotels() {
     	return hotel_list;
@@ -59,6 +139,31 @@ public class ArrayListConnection implements Connection {
     	hotel_list.add(hotel);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public Hotel editHotel(String name, String description, String city, String state) {
+		for(Hotel hotel: getHotels()) {
+			if(hotel.getName().equals(name)) {
+				if(!name.equals("")) {
+					hotel.setName(name);
+				}
+				if(!description.equals("")) {
+					hotel.setDescription(description);
+				}
+				if(!city.equals("")) {
+					hotel.setCity(city);
+				}
+				if(!state.equals("")) {
+					hotel.setState(state);
+				}
+				return hotel;
+			}
+		}
+		return null;
+	}
+	
     /**
      * {@inheritDoc}
      */
