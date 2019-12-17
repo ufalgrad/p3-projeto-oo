@@ -1,6 +1,8 @@
 package hotels;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 public class Hotel {
 	private String name;
@@ -11,9 +13,6 @@ public class Hotel {
 	private ArrayList<Room> rooms = new ArrayList<>();
 	private double rating_total = 0;
 	private int rated_count = 1;
-	
-	// This variable stores the number of rooms added
-	int room_number = 0;
 	
 	public Hotel(String name, String description, String city, String state, String manager) {
 		this.setName(name);
@@ -36,22 +35,18 @@ public class Hotel {
 	 * @param room Room instance to be associated to this hotel
 	 * @return room number
 	 */
-	public int addRoom(Room room) {
+	public void addRoom(Room room) {
 		rooms.add(room);
-		room_number++;
-		return room_number;
 	}
 	/**
 	 * Add many rooms using a Room instance array
 	 * @param rooms_to_add array containing all rooms to be added
 	 * @return room number of last added room
 	 */
-	public int addRooms(Room[] rooms_to_add) {
+	public void addRooms(Room[] rooms_to_add) {
 		for(Room room: rooms_to_add) {
 			addRoom(room);
 		}
-		// Return the new room_number after adding all rooms in the rooms_to_add array
-		return room_number;
 	}
 
 	/**
@@ -59,13 +54,12 @@ public class Hotel {
 	 * @param room The Room instance to be added
 	 * @param rooms_to_add the ammount of clones of the same room to be added
 	 * @return the number of the last room added
+	 * @throws NoSuchAlgorithmException 
 	 */
-	public int addRooms(Room room, int rooms_to_add) {
+	public void addRooms(Room room, int rooms_to_add) throws NoSuchAlgorithmException {
 		for(int i = 0; i < rooms_to_add; i++) {
-			addRoom(room);
+			addRoom(room.getClone());
 		}
-		// Return the new room_number after adding all rooms in the rooms_to_add array
-		return room_number;
 	}
 	
 	/**
@@ -126,12 +120,23 @@ public class Hotel {
 		return manager_username;
 	}
 	
-	public Room getRoom(int single_beds, int double_beds, boolean bathtub) {
+	public Room getRoom(int single_beds, int double_beds, boolean bathtub,
+			            GregorianCalendar start, GregorianCalendar end) {
 		for(Room room: rooms) {
 			if(room.getSingleBeds() == single_beds &&
 			   room.getDoubleBeds() == double_beds &&
 			   room.hasBathtub() == bathtub) {
-				return room;
+				System.out.println("Found matching room");
+				ArrayList<Booking> bookings = room.getBookings();
+				// If there are no bookings yet, that means this room is available
+				if(bookings.size() == 0) {
+					return room;
+				}
+				for(Booking booking: bookings) {
+					if(!(start.before(booking.getCheckout()) && booking.getCheckin().before(end))) {
+						return room;
+					}
+				}
 			}
 		}
 		return null;

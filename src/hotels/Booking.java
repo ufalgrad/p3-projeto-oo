@@ -12,12 +12,11 @@ public class Booking {
     // Get singleton class Util's instance
     Util util = Util.getInstance();
     
-    public Booking(String username, String hotel_name, Room room, GregorianCalendar check_in, GregorianCalendar check_out) {
+    public Booking(String username, String hotel_name, GregorianCalendar check_in, GregorianCalendar check_out) {
     	this.user = username;
     	this.hotel = hotel_name;
     	this.check_in = check_in;
     	this.check_out = check_out;
-    	this.room = room;
     }
     
     public String getUser() {

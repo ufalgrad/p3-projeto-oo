@@ -148,7 +148,7 @@ public class InputManager {
 			return result;
 		}
 		
-		public Hotel addHotel(String manager) throws InputMismatchException, NonUniqueColumnException {
+		public Hotel addHotel(String manager) throws InputMismatchException, NonUniqueColumnException, NoSuchAlgorithmException {
 			// Get hotel info
 			System.out.println("name: ");
 			String name = in.nextLine();
@@ -172,7 +172,6 @@ public class InputManager {
 			boolean register_another = true;
 			int single_beds;
 			int double_beds;
-			int number = 0;
 			while(register_another) {
 				int rooms;
 				System.out.println("How many single beds are there in this room?");
@@ -183,7 +182,7 @@ public class InputManager {
 				boolean bathtub = in.nextBoolean();
 
 				// Instantiate new Room()
-				Room new_room = new Room(number, single_beds, double_beds, bathtub);
+				Room new_room = new Room(util.generateUniqueId(), single_beds, double_beds, bathtub);
 						
 				System.out.println("How many rooms like this are there in the hotel?");
 				rooms = in.nextInt();
@@ -221,28 +220,49 @@ public class InputManager {
 			}
 		}
 		
-		public void editHotel(String hotel_name, User user) throws InputMismatchException {
+		public void editHotel(String hotel_name, User user) throws InputMismatchException, NoSuchAlgorithmException {
 				
 				Hotel hotel = conn.findHotel(hotel_name);
 				if(hotel != null) {
-				// Get hotel info
-				System.out.println("name: ");
-				String name = in.nextLine();
-				System.out.println("description: ");
-				String description = in.nextLine();
-				System.out.println("city: ");
-				String city = in.nextLine();
-				System.out.println("state: ");
-				String state = in.nextLine();
+					if(hotel.getManager().equals(user.getUsername())) {
+						// Get hotel info
+						System.out.println("name: ");
+						String name = in.nextLine();
+						System.out.println("description: ");
+						String description = in.nextLine();
+						System.out.println("city: ");
+						String city = in.nextLine();
+						System.out.println("state: ");
+						String state = in.nextLine();
+						// Update hotel instance
+						conn.editHotel(name, description, city, state);
 
-				if(hotel.getManager().equals(user.getUsername())) {
-					// Update hotel instance
-					conn.editHotel(name, description, city, state);
-					System.out.println("Hotel "+hotel.getName()+" edited successfully");
-				}
-				else {
-					System.out.println("You did not register this hotel.");
-				}
+						System.out.println("Do you want to register another room to this hotel?");
+						Boolean more_rooms = in.nextBoolean();
+						while(more_rooms) {
+							int rooms;
+							System.out.println("How many single beds are there in this room?");
+							int single_beds = in.nextInt();
+							System.out.println("How many double beds are there in this room?");
+							int double_beds = in.nextInt();
+							System.out.println("Does the room have a bathtub? (true/false)");
+							boolean bathtub = in.nextBoolean();
+
+							// Instantiate new Room()
+							Room new_room = new Room(util.generateUniqueId(), single_beds, double_beds, bathtub);
+									
+							System.out.println("How many rooms like this are there in the hotel?");
+							rooms = in.nextInt();
+							hotel.addRooms(new_room, rooms);
+
+							System.out.println("Do you want to add another room? (true/false)");
+							more_rooms = in.nextBoolean();
+						}
+						System.out.println("Hotel "+hotel.getName()+" edited successfully");
+					}
+					else {
+						System.out.println("You did not register this hotel.");
+					}
 				}
 				else {
 					System.out.println("This hotel does not exist.");
@@ -290,31 +310,18 @@ public class InputManager {
 			System.out.println("Do you want your room to have a bathtub (true/false)?");
 			boolean bathtub = in.nextBoolean();
 			
-			Room room = hotel.getRoom(single_beds, double_beds, bathtub);
+			Room room = hotel.getRoom(single_beds, double_beds, bathtub, start, end);
 			
 			// Check for overlap between bookings in the same hotel
-			if(!isOverlapping(hotel.getName(), room, start, end)) {
-				result = new Booking(user.getUsername(), hotel.getName(), room, start, end);
+			if(room != null) {
+				result = new Booking(user.getUsername(), hotel.getName(), start, end);
 				conn.insertBooking(result);
+				room.addBooking(result);
 				System.out.println("Your booking was made.");
 			} else {
-				System.out.println("Your booking conflicts with existing booking on that hotel");
+				System.out.println("There are no rooms like that available in this hotel");
 			}
 			return result;
-		}
-		
-		public boolean isOverlapping(String hotel_name, Room room, GregorianCalendar start, GregorianCalendar end) {
-			for(Booking booking: conn.getBookings()) {
-				if(booking.checkHotel(hotel_name)) {
-					// CHECK IF DATES OVERLAP
-					if(start.before(booking.getCheckout()) && booking.getCheckin().before(end)) {
-						if(booking.getRoom().checkType(room)) {
-							return true;
-						}
-					}
-				}
-			}
-			return false;
 		}
 		
 		public void findBookings(User user) {

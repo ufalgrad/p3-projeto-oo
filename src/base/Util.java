@@ -3,7 +3,9 @@ package base;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class Util {
@@ -69,4 +71,15 @@ public class Util {
 	    String dateFormatted = formattedDate.format(date.getTime());
 	    return dateFormatted;
     }
+	
+	/**
+	 * @return a hashed string representing the time of the operation
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public String generateUniqueId() throws NoSuchAlgorithmException {
+		Calendar cal = Calendar.getInstance();  
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
+		String strDate = dateFormat.format(cal.getTime());
+		return hashPassword(strDate);
+	}
 }
