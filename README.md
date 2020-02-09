@@ -10,6 +10,6 @@
 ### 2. Extract method:
  Group consecutive commands on a separate method
 ### Before:
- ![extract antes](./img/extract_method_antes.PNG)
+ ![extract antes](./img/extract_method_antes.png)
 ### After:
- ![extract depois](./img/extract_method_antes.PNG)
+ ![extract depois](./img/extract_method_antes.png)
