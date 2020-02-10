@@ -13,3 +13,9 @@
  ![extract antes](./img/extract_method_antes.png)
 ### After:
  ![extract depois](./img/extract_method_depois.png)
+### 2. Extract class:
+ Create a class instead of many attributes that are related
+### Before:
+ ![extract antes](./img/extract_class_antes.png)
+### After:
+ ![extract depois](./img/extract_class_depois.png)
