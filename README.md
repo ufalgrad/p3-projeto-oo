@@ -12,4 +12,4 @@
 ### Before:
  ![extract antes](./img/extract_method_antes.png)
 ### After:
- ![extract depois](./img/extract_method_antes.png)
+ ![extract depois](./img/extract_method_depois.png)
